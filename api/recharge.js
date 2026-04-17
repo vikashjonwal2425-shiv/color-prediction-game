@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recharge Wallet - VIP Prediction</title>
+    <style>
+        body { background: #121212; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; text-align: center; }
+        .recharge-card { background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { color: #00c853; margin-bottom: 5px; }
+        .bonus-box { background: rgba(255, 235, 59, 0.1); color: #ffeb3b; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; border: 1px dashed #ffeb3b; }
+        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #444; background: #222; color: white; font-size: 20px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
+        .qr-section { display: none; margin-top: 20px; background: white; padding: 20px; border-radius: 15px; color: #000; animation: fadeIn 0.5s; }
+        .qr-section img { width: 220px; height: 220px; border: 2px solid #eee; border-radius: 10px; }
+        .btn { width: 100%; padding: 15px; background: #00c853; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .upload-area { display: none; margin-top: 20px; border: 2px dashed #555; padding: 20px; border-radius: 15px; background: #1a1a1a; }
+        .file-input { background: none; color: #aaa; margin-top: 10px; font-size: 14px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="recharge-card">
+        <h2>रिचार्ज करें</h2>
+        <p style="color: #888; font-size: 14px;">Min: ₹100 | Max: ₹5000</p>
+        
+        <div class="bonus-box">
+            🎁 धमाका ऑफर: पहले रिचार्ज (₹100+) पर ₹100 का बोनस पायें!
+        </div>
+
+        <input type="number" id="rechargeAmount" placeholder="राशि भरें (₹)">
+        
+        <button id="payBtn" class="btn" onclick="openPayment()">Pay Now</button>
+
+        <div id="qrBox" class="qr-section">
+            <p>इस QR को स्कैन करके <b>₹<span id="showAmt">0</span></b> भेजें</p>
+            <img src="Qr101.jpg" alt="Payment QR">
+            <p style="font-size: 12px; margin-top: 10px; color: #666;">
+          
