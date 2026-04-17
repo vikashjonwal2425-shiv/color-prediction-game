@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Color Prediction</title>
+    <style>
+        body { background: #121212; color: white; text-align: center; font-family: sans-serif; }
+        .btn { padding: 20px 40px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .red { background: #ff4d4d; }
+        .green { background: #2ecc71; }
+        .violet { background: #9b59b6; }
+        #result { margin-top: 30px; font-size: 24px; padding: 20px; border: 1px solid #444; }
+    </style>
+</head>
+<body>
+    <h1>Color Prediction Game</h1>
+    <div id="timer">अगला राउंड 15 सेकंड में...</div>
+    <br>
+    <button class="btn red">Red</button>
+    <button class="btn green">Green</button>
+    <button class="btn violet">Violet</button>
+
+    <div id="result">रिजल्ट का इंतज़ार करें...</div>
+
+    <script>
+        async function getWinner() {
+            const res = await fetch('/api/result');
+            const data = await res.json();
+            document.getElementById('result').innerHTML = "विजेता रंग: " + data.winning_color.toUpperCase();
+            document.getElementById('result').style.color = data.winning_color;
+        }
+        // हर 15 सेकंड में रिजल्ट चेक करेगा
+        setInterval(getWinner, 15000);
+    </script>
+</body>
+</html>
+
