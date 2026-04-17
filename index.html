@@ -1,7 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Color Prediction</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .timer-card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: 20px auto; }
+        .num-btn { background: #333; border: none; color: white; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; }
+        .color-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 15px 25px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; flex: 1; max-width: 100px; }
+        .green { background: #00c853; } .violet { background: #aa00ff; } .red { background: #d50000; }
+        #res-box { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px dashed #444; }
+    </style>
+</head>
 <body>
-    <h1>App is Working!</h1>
-    <p>अगर यह दिख रहा है, तो इसका मतलब है कि फाइलों का रास्ता सही है।</p>
+
+    <div class="timer-card">
+        <h2 id="timer">00:30</h2>
+        <p>Period: <span id="period">20260417001</span></p>
+    </div>
+
+    <div class="color-row">
+        <button class="btn green" onclick="makeBet('Green')">Green</button>
+        <button class="btn violet" onclick="makeBet('Violet')">Violet</button>
+        <button class="btn red" onclick="makeBet('Red')">Red</button>
+    </div>
+
+    <div class="grid">
+        <button class="num-btn" onclick="makeBet('0')">0</button>
+        <button class="num-btn" onclick="makeBet('1')">1</button>
+        <button class="num-btn" onclick="makeBet('2')">2</button>
+        <button class="num-btn" onclick="makeBet('3')">3</button>
+        <button class="num-btn" onclick="makeBet('4')">4</button>
+        <button class="num-btn" onclick="makeBet('5')">5</button>
+        <button class="num-btn" onclick="makeBet('6')">6</button>
+        <button class="num-btn" onclick="makeBet('7')">7</button>
+        <button class="num-btn" onclick="makeBet('8')">8</button>
+        <button class="num-btn" onclick="makeBet('9')">9</button>
+    </div>
+
+    <div id="res-box">
+        <div>पिछला परिणाम:</div>
+        <h3 id="last-win">प्रतीक्षा करें...</h3>
+    </div>
+
+    <script>
+        let timeLeft = 30;
+        
+        // टाइमर लॉजिक
+        setInterval(() => {
+            if(timeLeft <= 0) {
+                timeLeft = 30;
+                fetchWin();
+            }
+            timeLeft--;
+            document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
+        }, 1000);
+
+        function makeBet(choice) {
+            let amt = prompt(`${choice} पर कितने पैसे लगाना चाहते हैं?`, "10");
+            if(amt) {
+                alert(`${choice} पर ₹${amt} की बेट लग गई!`);
+            }
+        }
+
+        async function fetchWin() {
+            try {
+                const r = await fetch('/api/result');
+                const d = await r.json();
+                document.getElementById('last-win').innerHTML = 
+                    `<span style="color:${d.winning_color}">${d.winning_color.toUpperCase()} (${d.winning_number})</span>`;
+            } catch(e) { console.log("Result error"); }
+        }
+    </script>
 </body>
 </html>
