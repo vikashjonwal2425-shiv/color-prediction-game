@@ -3,19 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Color Prediction</title>
+    <title>Pro Color Prediction Game</title>
     <style>
-        body { background: #121212; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        body { background: #121212; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 10px; }
+        
+        /* वॉलेट सेक्शन */
+        .header-box { background: linear-gradient(45deg, #1d976c, #93f9b9); color: #000; padding: 15px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        
         .timer-card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: 20px auto; }
-        .num-btn { background: #333; border: none; color: white; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; }
+        
+        /* कलर बटन */
         .color-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .btn { padding: 15px 25px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; flex: 1; max-width: 100px; }
+        .btn { padding: 15px 20px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; flex: 1; font-size: 14px; }
         .green { background: #00c853; } .violet { background: #aa00ff; } .red { background: #d50000; }
+        
+        /* नंबर ग्रिड */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: 20px auto; }
+        .num-btn { background: #333; border: 1px solid #444; color: white; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .num-btn:active { background: #555; }
+        
+        /* रिजल्ट सेक्शन */
         #res-box { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px dashed #444; }
+        .win-circle { width: 40px; height: 40px; border-radius: 50%; display: inline-block; line-height: 40px; margin-left: 10px; font-weight: bold; background: #444; }
     </style>
 </head>
 <body>
+
+    <div class="header-box">
+        <span>यूज़र: Vikash</span>
+        <span>बैलेंस: ₹<span id="balance">1000</span></span>
+    </div>
 
     <div class="timer-card">
         <h2 id="timer">00:30</h2>
@@ -23,9 +40,9 @@
     </div>
 
     <div class="color-row">
-        <button class="btn green" onclick="makeBet('Green')">Green</button>
-        <button class="btn violet" onclick="makeBet('Violet')">Violet</button>
-        <button class="btn red" onclick="makeBet('Red')">Red</button>
+        <button class="btn green" onclick="makeBet('green')">Join Green</button>
+        <button class="btn violet" onclick="makeBet('violet')">Join Violet</button>
+        <button class="btn red" onclick="makeBet('red')">Join Red</button>
     </div>
 
     <div class="grid">
@@ -42,37 +59,80 @@
     </div>
 
     <div id="res-box">
-        <div>पिछला परिणाम:</div>
-        <h3 id="last-win">प्रतीक्षा करें...</h3>
+        <div>पिछला रिकॉर्ड:</div>
+        <div id="history" style="margin-top: 10px;">
+            <span id="last-win">प्रतीक्षा करें...</span>
+        </div>
     </div>
 
     <script>
         let timeLeft = 30;
-        
-        // टाइमर लॉजिक
-        setInterval(() => {
-            if(timeLeft <= 0) {
-                timeLeft = 30;
-                fetchWin();
-            }
-            timeLeft--;
-            document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
-        }, 1000);
+        let userBalance = 1000;
 
-        function makeBet(choice) {
-            let amt = prompt(`${choice} पर कितने पैसे लगाना चाहते हैं?`, "10");
-            if(amt) {
-                alert(`${choice} पर ₹${amt} की बेट लग गई!`);
+        // --- 1. बेट लगाने का फंक्शन (makeBet) ---
+        async function makeBet(choice) {
+            let amount = prompt(`${choice.toUpperCase()} पर कितनी राशि लगाना चाहते हैं?`, "10");
+            
+            if (!amount || isNaN(amount) || amount <= 0) return;
+            
+            if (amount > userBalance) {
+                alert("गलती: आपके पास पर्याप्त बैलेंस नहीं है!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/bet', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        user: "Vikash", 
+                        amount: parseInt(amount), 
+                        choice: choice 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    userBalance = data.newBalance || (userBalance - amount);
+                    document.getElementById('balance').innerText = userBalance;
+                    alert(`${choice} पर ₹${amount} की बेट लग गई!`);
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (err) {
+                // अगर API अभी तैयार नहीं है, तो डेमो के लिए बैलेंस काट दें
+                userBalance -= amount;
+                document.getElementById('balance').innerText = userBalance;
+                alert(`डेमो मोड: ${choice} पर ₹${amount} लग गए।`);
             }
         }
 
-        async function fetchWin() {
+        // --- 2. टाइमर लॉजिक ---
+        setInterval(() => {
+            if (timeLeft <= 0) {
+                timeLeft = 30;
+                fetchWinner();
+            }
+            timeLeft--;
+            document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`;
+        }, 1000);
+
+        // --- 3. विनर फेच करने का फंक्शन ---
+        async function fetchWinner() {
             try {
-                const r = await fetch('/api/result');
-                const d = await r.json();
-                document.getElementById('last-win').innerHTML = 
-                    `<span style="color:${d.winning_color}">${d.winning_color.toUpperCase()} (${d.winning_number})</span>`;
-            } catch(e) { console.log("Result error"); }
+                const res = await fetch('/api/result');
+                const data = await res.json();
+                const lastWin = document.getElementById('last-win');
+                lastWin.innerHTML = `
+                    <div class="win-circle" style="background:${data.winning_color}; color:white">
+                        ${data.winning_number}
+                    </div>
+                    <p style="color:${data.winning_color}">Winner: ${data.winning_color.toUpperCase()}</p>
+                `;
+            } catch (e) {
+                console.log("Waiting for result...");
+            }
         }
     </script>
 </body>
