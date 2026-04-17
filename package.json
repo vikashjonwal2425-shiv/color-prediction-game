@@ -1,0 +1,8 @@
+{
+  "name": "color-prediction-game",
+  "version": "1.0.0",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  }
+}
+
