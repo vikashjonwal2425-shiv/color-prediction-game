@@ -1,29 +1,7 @@
-<script>
-    async function placeBet(choice) {
-        const amount = prompt(`${choice} पर कितने रुपये?`, "10");
-        if(!amount) return;
-
-        const response = await fetch('/api/bet', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user: "Vikash", amount, choice })
-        });
-
-        const data = await response.json();
-        if(data.success) alert("Bet Successful!");
-    }
-
-    // बटनों पर ये फंक्शन जोड़ें
-    document.querySelector('.red').onclick = () => placeBet('red');
-    document.querySelector('.green').onclick = () => placeBet('green');
-    document.querySelector('.violet').onclick = () => placeBet('violet');
-
-    // रिजल्ट हर 30 सेकंड में अपने आप आएगा
-    async function showResult() {
-        const res = await fetch('/api/result');
-        const data = await res.json();
-        document.getElementById('last-result').innerHTML = 
-            `<b style="color:${data.winning_color}">Winner: ${data.winning_color} (${data.winning_number})</b>`;
-    }
-    setInterval(showResult, 30000);
-</script>
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>App is Working!</h1>
+    <p>अगर यह दिख रहा है, तो इसका मतलब है कि फाइलों का रास्ता सही है।</p>
+</body>
+</html>
