@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VIP Prediction</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        h2 { color: #00c853; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #222; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #00c853; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .switch { margin-top: 15px; font-size: 14px; color: #aaa; cursor: pointer; }
+        .bonus-tag { font-size: 12px; color: #ffeb3b; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card" id="login-box">
+        <h2>Login</h2>
+        <input type="number" id="l-phone" placeholder="Mobile Number">
+        <input type="password" id="l-pass" placeholder="Password">
+        <button class="btn" onclick="handleLogin()">Login</button>
+        <p class="switch" onclick="toggleAuth()">अकाउंट नहीं है? Register करें</p>
+    </div>
+
+    <div class="auth-card" id="reg-box" style="display: none;">
+        <h2>Register</h2>
+        <input type="number" id="r-phone" placeholder="Mobile Number">
+        <input type="password" id="r-pass" placeholder="Create Password">
+        <div class="bonus-tag">🎁 ₹100 बोनस मिलेगा (पहली बार ₹100+ जमा करने पर)</div>
+        <button class="btn" onclick="handleRegister()">Register</button>
+        <p class="switch" onclick="toggleAuth()">अकाउंट है? Login करें</p>
+    </div>
+
+    <script>
+        function toggleAuth() {
+            const l = document.getElementById('login-box');
+            const r = document.getElementById('reg-box');
+            l.style.display = l.style.display === 'none' ? 'block' : 'none';
+            r.style.display = r.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function handleRegister() {
+            const phone = document.getElementById('r-phone').value;
+            const pass = document.getElementById('r-pass').value;
+            if(phone.length < 10) return alert("सही मोबाइल नंबर डालें");
+            
+            // यहाँ API कॉल होगा जो डेटाबेस में यूज़र बनाएगा
+            alert("रजिस्ट्रेशन सफल! अब डिपॉजिट करें।");
+            window.location.href = "/index.html";
+        }
+
+        function handleLogin() {
+            alert("लॉगिन सफल!");
+            window.location.href = "/index.html";
+        }
+    </script>
+</body>
+</html>
