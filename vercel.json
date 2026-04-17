@@ -1,8 +1,10 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/recharge", "destination": "/recharge.html" },
+    { "source": "/login", "destination": "/login.html" }
   ]
 }
-
