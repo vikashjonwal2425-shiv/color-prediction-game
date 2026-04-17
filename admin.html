@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - VIP Game</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; padding: 20px; }
+        .admin-card { background: #1e1e1e; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 12px; text-align: center; }
+        th { background: #333; }
+        .approve-btn { background: #00c853; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .reject-btn { background: #d50000; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; display: flex; justify-content: center; align-items: center; z-index: 100; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="admin-card">
+            <h3>Admin Login</h3>
+            <input type="password" id="adminPass" placeholder="Enter Admin Password" style="padding: 10px; width: 200px;">
+            <button onclick="checkPass()" style="padding: 10px 20px;">Login</button>
+        </div>
+    </div>
+
+    <h1>Admin Control Room</h1>
+
+    <div class="admin-card">
+        <h3>Pending Recharge Requests</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="requestTable">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        const MY_PASS = "VIKASH786"; // अपना पासवर्ड यहाँ बदलें
+
+        function checkPass() {
+            if(document.getElementById('adminPass').value === MY_PASS) {
+                document.getElementById('login-overlay').style.display = 'none';
+                loadRequests();
+            } else {
+                alert("Wrong Password!");
+            }
+        }
+
+        async function loadRequests() {
+            const res = await fetch('/api/admin-requests');
+            const data = await res.json();
+            const table = document.getElementById('requestTable');
+            table.innerHTML = "";
+            
+            data.requests.forEach(req => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${req.username}</td>
+                        <td>₹${req.amount}</td>
+                        <td>${new Date(req.time).toLocaleString()}</td>
+                        <td>
+                            <button class="approve-btn" onclick="action('${req._id}', 'approve')">Approve</button>
+                            <button class="reject-btn" onclick="action('${req._id}', 'reject')">Reject</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function action(id, type) {
+            const res = await fetch('/api/admin-action', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id, type })
+            });
+            const result = await res.json();
+            if(result.success) {
+                alert("Updated!");
+                loadRequests();
+            }
+        }
+    </script>
+</body>
+</html>
+
