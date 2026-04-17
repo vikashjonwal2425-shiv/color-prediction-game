@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recharge - VIP Prediction</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .amount-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .amt-btn { background: #333; border: 1px solid #444; color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 18px; }
+        .amt-btn:hover { border-color: #00c853; }
+        input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: #222; color: white; font-size: 20px; text-align: center; box-sizing: border-box; }
+        .recharge-btn { width: 100%; padding: 15px; background: #00c853; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px; margin-top: 20px; cursor: pointer; }
+        .bonus-msg { color: #ffeb3b; font-size: 14px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Recharge Wallet</h2>
+        <p style="color: #aaa;">Min: ₹100 | Max: ₹5000</p>
+        
+        <input type="number" id="recharge-amt" placeholder="Enter Amount" min="100" max="5000">
+        
+        <div class="amount-grid">
+            <button class="amt-btn" onclick="setAmt(100)">₹100</button>
+            <button class="amt-btn" onclick="setAmt(500)">₹500</button>
+            <button class="amt-btn" onclick="setAmt(1000)">₹1000</button>
+            <button class="amt-btn" onclick="setAmt(5000)">₹5000</button>
+        </div>
+
+        <div class="bonus-msg">🔥 फर्स्ट डिपॉजिट पर ₹100 बोनस!</div>
+        
+        <button class="recharge-btn" onclick="processRecharge()">Recharge Now</button>
+    </div>
+
+    <script>
+        function setAmt(val) { document.getElementById('recharge-amt').value = val; }
+
+        function processRecharge() {
+            const amt = document.getElementById('recharge-amt').value;
+            if (amt < 100 || amt > 5000) {
+                alert("कृपया ₹100 से ₹5000 के बीच की राशि डालें।");
+                return;
+            }
+            
+            // यहाँ यूज़र को पेमेंट पेज या QR कोड पर भेजेंगे
+            alert(`₹${amt} का पेमेंट गेटवे लोड हो रहा है...`);
+            // बोनस लॉजिक: अगर यह फर्स्ट डिपॉजिट है, तो API ₹100 एक्स्ट्रा जोड़ेगा।
+        }
+    </script>
+</body>
+</html>
+
