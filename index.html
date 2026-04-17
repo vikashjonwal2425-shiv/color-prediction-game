@@ -1,83 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Color Prediction</title>
-    <style>
-        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .timer-box { background: #333; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .modes { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { padding: 8px 15px; border: 1px solid #555; background: none; color: white; cursor: pointer; border-radius: 20px; }
-        .mode-btn.active { background: #007bff; border-color: #007bff; }
-        
-        .color-btns { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .btn { padding: 15px 30px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .green { background: #28a745; } .violet { background: #6f42c1; } .red { background: #dc3545; }
-        
-        .numbers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: 0 auto; }
-        .num-btn { background: #444; border: none; color: white; padding: 15px; border-radius: 5px; cursor: pointer; font-size: 18px; }
-        .num-btn:hover { background: #555; }
-        
-        #result-display { margin-top: 30px; padding: 20px; background: #222; border-radius: 10px; border: 1px dashed #555; }
-        .win-circle { width: 50px; height: 50px; border-radius: 50%; display: inline-block; margin-top: 10px; line-height: 50px; font-weight: bold; }
-    </style>
-</head>
-<body>
+<script>
+    async function placeBet(choice) {
+        const amount = prompt(`${choice} पर कितने रुपये?`, "10");
+        if(!amount) return;
 
-    <div class="timer-box">
-        <div class="modes">
-            <button class="mode-btn active">30s</button>
-            <button class="mode-btn">1m</button>
-            <button class="mode-btn">3m</button>
-        </div>
-        <h2 id="time-left">00:30</h2>
-        <p>Period ID: 20260417001</p>
-    </div>
+        const response = await fetch('/api/bet', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user: "Vikash", amount, choice })
+        });
 
-    <div class="color-btns">
-        <button class="btn green">Join Green</button>
-        <button class="btn violet">Join Violet</button>
-        <button class="btn red">Join Red</button>
-    </div>
+        const data = await response.json();
+        if(data.success) alert("Bet Successful!");
+    }
 
-    <div class="numbers-grid">
-        <button class="num-btn">0</button><button class="num-btn">1</button>
-        <button class="num-btn">2</button><button class="num-btn">3</button>
-        <button class="num-btn">4</button><button class="num-btn">5</button>
-        <button class="num-btn">6</button><button class="num-btn">7</button>
-        <button class="num-btn">8</button><button class="num-btn">9</button>
-    </div>
+    // बटनों पर ये फंक्शन जोड़ें
+    document.querySelector('.red').onclick = () => placeBet('red');
+    document.querySelector('.green').onclick = () => placeBet('green');
+    document.querySelector('.violet').onclick = () => placeBet('violet');
 
-    <div id="result-display">
-        <div>पिछला परिणाम:</div>
-        <div id="last-result">प्रतीक्षा करें...</div>
-    </div>
-
-    <script>
-        let timeLeft = 30;
-        const timerElement = document.getElementById('time-left');
-
-        function startTimer() {
-            setInterval(() => {
-                if(timeLeft <= 0) {
-                    fetchResult();
-                    timeLeft = 30; 
-                }
-                timeLeft--;
-                let secs = timeLeft < 10 ? '0'+timeLeft : timeLeft;
-                timerElement.innerText = `00:${secs}`;
-            }, 1000);
-        }
-
-        async function fetchResult() {
-            const res = await fetch('/api/result');
-            const data = await res.json();
-            const lastResDiv = document.getElementById('last-result');
-            lastResDiv.innerHTML = `<div class="win-circle" style="background:${data.winning_color}">${data.winning_number}</div>`;
-        }
-
-        startTimer();
-    </script>
-</body>
-</html>
+    // रिजल्ट हर 30 सेकंड में अपने आप आएगा
+    async function showResult() {
+        const res = await fetch('/api/result');
+        const data = await res.json();
+        document.getElementById('last-result').innerHTML = 
+            `<b style="color:${data.winning_color}">Winner: ${data.winning_color} (${data.winning_number})</b>`;
+    }
+    setInterval(showResult, 30000);
+</script>
