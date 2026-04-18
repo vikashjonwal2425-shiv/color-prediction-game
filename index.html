@@ -1,138 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Color Prediction Game</title>
+    <title>VIP Game - History Mode</title>
     <style>
-        body { background: #121212; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 10px; }
+        body { background: #121212; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .timer-card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .btn-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; flex: 1; }
+        .red { background: #ff4444; } .green { background: #00c853; } .violet { background: #aa00ff; }
         
-        /* वॉलेट सेक्शन */
-        .header-box { background: linear-gradient(45deg, #1d976c, #93f9b9); color: #000; padding: 15px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        
-        .timer-card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        
-        /* कलर बटन */
-        .color-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .btn { padding: 15px 20px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; flex: 1; font-size: 14px; }
-        .green { background: #00c853; } .violet { background: #aa00ff; } .red { background: #d50000; }
-        
-        /* नंबर ग्रिड */
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: 20px auto; }
-        .num-btn { background: #333; border: 1px solid #444; color: white; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        .num-btn:active { background: #555; }
-        
-        /* रिजल्ट सेक्शन */
-        #res-box { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px dashed #444; }
-        .win-circle { width: 40px; height: 40px; border-radius: 50%; display: inline-block; line-height: 40px; margin-left: 10px; font-weight: bold; background: #444; }
+        /* रिकॉर्ड टेबल स्टाइल */
+        .history-section { margin-top: 30px; background: #1a1a1a; border-radius: 10px; padding: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 10px; border-bottom: 1px solid #333; }
+        .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <div class="header-box">
-        <span>यूज़र: Vikash</span>
-        <span>बैलेंस: ₹<span id="balance">1000</span></span>
+    <div style="display:flex; justify-content:space-between; padding:10px; background:#333; border-radius:10px; margin-bottom:10px;">
+        <span>User: Vikash</span>
+        <span>Balance: ₹<span id="balance">1000</span></span>
     </div>
 
     <div class="timer-card">
         <h2 id="timer">00:30</h2>
-        <p>Period: <span id="period">20260417001</span></p>
+        <p>Period: <span id="period">---</span></p>
     </div>
 
-    <div class="color-row">
-        <button class="btn green" onclick="makeBet('green')">Join Green</button>
-        <button class="btn violet" onclick="makeBet('violet')">Join Violet</button>
-        <button class="btn red" onclick="makeBet('red')">Join Red</button>
+    <div class="btn-row">
+        <button class="btn green" onclick="bet('green')">Green</button>
+        <button class="btn violet" onclick="bet('violet')">Violet</button>
+        <button class="btn red" onclick="bet('red')">Red</button>
     </div>
 
-    <div class="grid">
-        <button class="num-btn" onclick="makeBet('0')">0</button>
-        <button class="num-btn" onclick="makeBet('1')">1</button>
-        <button class="num-btn" onclick="makeBet('2')">2</button>
-        <button class="num-btn" onclick="makeBet('3')">3</button>
-        <button class="num-btn" onclick="makeBet('4')">4</button>
-        <button class="num-btn" onclick="makeBet('5')">5</button>
-        <button class="num-btn" onclick="makeBet('6')">6</button>
-        <button class="num-btn" onclick="makeBet('7')">7</button>
-        <button class="num-btn" onclick="makeBet('8')">8</button>
-        <button class="num-btn" onclick="makeBet('9')">9</button>
-    </div>
-
-    <div id="res-box">
-        <div>पिछला रिकॉर्ड:</div>
-        <div id="history" style="margin-top: 10px;">
-            <span id="last-win">प्रतीक्षा करें...</span>
-        </div>
+    <div class="history-section">
+        <h3>पिछले 30 रिकॉर्ड (Record)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Number</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="history-body">
+                </tbody>
+        </table>
     </div>
 
     <script>
         let timeLeft = 30;
-        let userBalance = 1000;
 
-        // --- 1. बेट लगाने का फंक्शन (makeBet) ---
-        async function makeBet(choice) {
-            let amount = prompt(`${choice.toUpperCase()} पर कितनी राशि लगाना चाहते हैं?`, "10");
-            
-            if (!amount || isNaN(amount) || amount <= 0) return;
-            
-            if (amount > userBalance) {
-                alert("गलती: आपके पास पर्याप्त बैलेंस नहीं है!");
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/bet', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ 
-                        user: "Vikash", 
-                        amount: parseInt(amount), 
-                        choice: choice 
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.success) {
-                    userBalance = data.newBalance || (userBalance - amount);
-                    document.getElementById('balance').innerText = userBalance;
-                    alert(`${choice} पर ₹${amount} की बेट लग गई!`);
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch (err) {
-                // अगर API अभी तैयार नहीं है, तो डेमो के लिए बैलेंस काट दें
-                userBalance -= amount;
-                document.getElementById('balance').innerText = userBalance;
-                alert(`डेमो मोड: ${choice} पर ₹${amount} लग गए।`);
-            }
-        }
-
-        // --- 2. टाइमर लॉजिक ---
+        // हर 1 सेकंड में टाइमर अपडेट करना
         setInterval(() => {
             if (timeLeft <= 0) {
                 timeLeft = 30;
-                fetchWinner();
+                refreshGame(); // रिजल्ट फेच करो
             }
             timeLeft--;
-            document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`;
+            document.getElementById('timer').innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
         }, 1000);
 
-        // --- 3. विनर फेच करने का फंक्शन ---
-        async function fetchWinner() {
+        async function refreshGame() {
             try {
                 const res = await fetch('/api/result');
                 const data = await res.json();
-                const lastWin = document.getElementById('last-win');
-                lastWin.innerHTML = `
-                    <div class="win-circle" style="background:${data.winning_color}; color:white">
-                        ${data.winning_number}
-                    </div>
-                    <p style="color:${data.winning_color}">Winner: ${data.winning_color.toUpperCase()}</p>
-                `;
-            } catch (e) {
-                console.log("Waiting for result...");
-            }
+                
+                // पीरियड अपडेट करें
+                if(data.latest) document.getElementById('period').innerText = data.latest.period;
+
+                // टेबल अपडेट करें
+                const tableBody = document.getElementById('history-body');
+                tableBody.innerHTML = ""; // पुरानी लिस्ट साफ करें
+
+                data.history.forEach(item => {
+                    const colorCircle = `<span class="dot" style="background:${item.winning_color}"></span>`;
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${item.period}</td>
+                            <td>${item.winning_number}</td>
+                            <td>${colorCircle}</td>
+                        </tr>
+                    `;
+                });
+            } catch (e) { console.log("डेटा नहीं मिल रहा..."); }
+        }
+
+        // पहली बार लोड होने पर
+        refreshGame();
+
+        function bet(c) {
+            alert(c + " पर बेट लग गई! (API से जुड़ने के लिए रिचार्ज करें)");
         }
     </script>
 </body>
